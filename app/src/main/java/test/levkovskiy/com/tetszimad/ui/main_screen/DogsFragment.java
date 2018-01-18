@@ -1,11 +1,11 @@
 package test.levkovskiy.com.tetszimad.ui.main_screen;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,16 +26,13 @@ import test.levkovskiy.com.tetszimad.net.NetworkService;
 import test.levkovskiy.com.tetszimad.net.model.AnimalModel;
 import test.levkovskiy.com.tetszimad.ui.details.DetailsActivity;
 
+import static test.levkovskiy.com.tetszimad.ui.main_screen.CatsFragment.OBJECT;
+import static test.levkovskiy.com.tetszimad.ui.main_screen.CatsFragment.POSITION;
 
-public class FirstFragment extends Fragment {
-    public static final int CAT_TYPE = 0;
-    public static final int DOG_TYPE = 1;
-    public static final String TYPE = "TYPE";
-    public static final String OBJECT = "object";
-    public static final String POSITION = "position";
+public class DogsFragment extends Fragment {
+
     NetworkService service;
     Adapter adapter;
-    int currentType = 0;
     @BindView(R.id.rv_animals)
     RecyclerView rvAnimals;
     Unbinder unbinder;
@@ -43,10 +40,10 @@ public class FirstFragment extends Fragment {
     private Parcelable listState;
     private String LIST_STATE_KEY = "list_state";
 
-    public static FirstFragment newInstance(int type) {
+    public static DogsFragment newInstance() {
         Bundle args = new Bundle();
-        args.putInt(TYPE, type);
-        FirstFragment fragment = new FirstFragment();
+
+        DogsFragment fragment = new DogsFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,44 +64,26 @@ public class FirstFragment extends Fragment {
             public void onItemClick(int pos) {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra(OBJECT, adapter.getItem(pos));
-                intent.putExtra(TYPE, currentType);
                 intent.putExtra(POSITION, pos);
                 startActivity(intent);
             }
         });
         rvAnimals.setAdapter(adapter);
-        currentType = getArguments().getInt(TYPE, 0);
-        if (currentType == CAT_TYPE) {
-            Subscription subscription = service.getCats()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<AnimalModel>() {
-                        @Override
-                        public void call(AnimalModel animalModelWebResponse) {
-                            adapter.addAll(animalModelWebResponse.getData());
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.e("error", throwable.getMessage());
-                        }
-                    });
+        Subscription subscription = service.getDogs()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<AnimalModel>() {
+                    @Override
+                    public void call(AnimalModel animalModelWebResponse) {
+                        adapter.addAll(animalModelWebResponse.getData());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e("error", throwable.getMessage());
+                    }
+                });
 
-        } else if (currentType == DOG_TYPE) {
-            Subscription subscription = service.getDogs()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<AnimalModel>() {
-                        @Override
-                        public void call(AnimalModel animalModelWebResponse) {
-                            adapter.addAll(animalModelWebResponse.getData());
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.e("error", throwable.getMessage());
-                        }
-                    });
 
-        }
         return view;
     }
 

@@ -1,8 +1,6 @@
 package test.levkovskiy.com.tetszimad.ui.details;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,9 +12,9 @@ import test.levkovskiy.com.tetszimad.R;
 import test.levkovskiy.com.tetszimad.net.model.AnimalModel;
 import test.levkovskiy.com.tetszimad.ui.BaseActivity;
 
-import static test.levkovskiy.com.tetszimad.ui.main_screen.FirstFragment.OBJECT;
-import static test.levkovskiy.com.tetszimad.ui.main_screen.FirstFragment.POSITION;
-import static test.levkovskiy.com.tetszimad.ui.main_screen.FirstFragment.TYPE;
+import static test.levkovskiy.com.tetszimad.ui.main_screen.CatsFragment.OBJECT;
+import static test.levkovskiy.com.tetszimad.ui.main_screen.CatsFragment.POSITION;
+import static test.levkovskiy.com.tetszimad.ui.main_screen.CatsFragment.TYPE;
 
 public class DetailsActivity extends BaseActivity {
 
@@ -42,6 +40,5 @@ public class DetailsActivity extends BaseActivity {
             currentType = getIntent().getIntExtra(TYPE, 0);
         }
     }
-
 
 }

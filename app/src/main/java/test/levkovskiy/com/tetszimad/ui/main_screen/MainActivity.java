@@ -2,6 +2,7 @@ package test.levkovskiy.com.tetszimad.ui.main_screen;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -12,7 +13,7 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.sliding_tabs)
     TabLayout tabLayout;
-    private FirstFragment firstFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,13 +26,13 @@ public class MainActivity extends BaseActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tabLayout.getSelectedTabPosition() == 0) {
                     // cats fragment
-                    firstFragment = FirstFragment.newInstance(FirstFragment.CAT_TYPE);
-                    replaceFragment("catFragment");
+                    CatsFragment catsFragment = CatsFragment.newInstance();
+                    replaceFragment(catsFragment, "catFragment");
 
                 } else if (tabLayout.getSelectedTabPosition() == 1) {
                     // dogs fragment
-                    firstFragment = FirstFragment.newInstance(FirstFragment.DOG_TYPE);
-                    replaceFragment("dogFragment");
+                    DogsFragment dogsFragment = DogsFragment.newInstance();
+                    replaceFragment(dogsFragment, "dogFragment");
                 }
             }
 
@@ -50,8 +51,8 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void replaceFragment(String tag) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, firstFragment, tag).commit();
+    private void replaceFragment(Fragment fragment, String tag) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment, tag).commit();
 
     }
 }

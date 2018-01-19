@@ -1,54 +1,58 @@
 package test.levkovskiy.com.zimad.ui.main_screen;
 
-import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import test.levkovskiy.com.zimad.R;
+import test.levkovskiy.com.zimad.databinding.ItemListBinding;
 import test.levkovskiy.com.zimad.net.model.AnimalModel;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.AnimalViewHolder> {
+    private OnItemClick onClick;
     private List<AnimalModel.DataBean> animals;
-    private Context context;
-    private OnItemClickListener listener;
 
-    Adapter(List<AnimalModel.DataBean> animals, Context context, OnItemClickListener clickListener) {
+    Adapter(List<AnimalModel.DataBean> animals, OnItemClick onItemClick) {
         this.animals = animals;
-        this.context = context;
-        this.listener = clickListener;
+        this.onClick = onItemClick;
+
+    }
+
+    interface OnItemClick {
+        void inItemClicked(int pos);
     }
 
     AnimalModel.DataBean getItem(int pos) {
         return animals.get(pos);
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int pos);
-    }
 
+    @BindingAdapter("imageUrl")
+    public static void loadImage(ImageView imageView, String v) {
+        Picasso.with(imageView.getContext()).load(v).into(imageView);
+    }
 
     @Override
     public AnimalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false);
-        return new AnimalViewHolder(v, listener);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemListBinding binding = ItemListBinding.inflate(inflater, parent, false);
+        return new AnimalViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
-        AnimalModel.DataBean model = animals.get(position);
-        holder.tvTitle.setText(String.valueOf(position));
-        holder.tvSubtitle.setText(model.getTitle());
-        Picasso.with(context).load(model.getUrl()).fit().into(holder.image);
+        AnimalModel.DataBean movie = animals.get(position);
+        holder.binding.setAnimal(movie);
+        holder.binding.setCount(String.valueOf(position));
+        holder.binding.getRoot().setOnClickListener(v -> onClick.inItemClicked(position));
+
     }
 
     @Override
@@ -62,23 +66,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.AnimalViewHolder> {
     }
 
     static class AnimalViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.image)
-        ImageView image;
-        @BindView(R.id.tv_title)
-        TextView tvTitle;
-        @BindView(R.id.tv_subtitle)
-        TextView tvSubtitle;
+        ItemListBinding binding;
 
-        AnimalViewHolder(View itemView, final OnItemClickListener onItemClickListener) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick(getAdapterPosition());
-                }
-            });
-
+        AnimalViewHolder(View v) {
+            super(v);
+            binding = DataBindingUtil.bind(v);
         }
     }
 }

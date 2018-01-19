@@ -22,7 +22,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import test.levkovskiy.com.zimad.R;
 import test.levkovskiy.com.zimad.net.NetworkService;
-import test.levkovskiy.com.zimad.net.model.AnimalModel;
 import test.levkovskiy.com.zimad.ui.details.DetailsActivity;
 
 import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.OBJECT;
@@ -58,22 +57,24 @@ public class DogsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_first, container, false);
         unbinder = ButterKnife.bind(this, view);
         service = new NetworkService();
-        adapter = new Adapter(new ArrayList<>(), getActivity(), pos -> {
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        adapter = new Adapter(new ArrayList<>(), pos -> {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             intent.putExtra(OBJECT, adapter.getItem(pos));
             intent.putExtra(POSITION, pos);
             startActivity(intent);
         });
         rvAnimals.setAdapter(adapter);
+
         Subscription subscription = service.getDogs()
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(animalModelWebResponse ->
-                                adapter.addAll(animalModelWebResponse.getData())
-
-                        , throwable -> Log.e("error", throwable.getMessage()));
-
-
-        return view;
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(animalModelWebResponse -> adapter.addAll(animalModelWebResponse.getData()), throwable -> Log.e("error", throwable.getMessage()));
     }
 
     @Override

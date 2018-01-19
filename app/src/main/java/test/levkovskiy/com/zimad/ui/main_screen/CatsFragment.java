@@ -25,12 +25,11 @@ import test.levkovskiy.com.zimad.ui.details.DetailsActivity;
 
 
 public class CatsFragment extends Fragment {
-    public static final String TYPE = "TYPE";
     public static final String OBJECT = "object";
     public static final String POSITION = "position";
     NetworkService service;
     Adapter adapter;
-    int currentType = 0;
+
     @BindView(R.id.rv_animals)
     RecyclerView rvAnimals;
     Unbinder unbinder;
@@ -56,23 +55,33 @@ public class CatsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_first, container, false);
         unbinder = ButterKnife.bind(this, view);
         service = new NetworkService();
-        adapter = new Adapter(new ArrayList<>(), getActivity(), pos -> {
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        adapter = new Adapter(new ArrayList<>(), pos -> {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             intent.putExtra(OBJECT, adapter.getItem(pos));
-            intent.putExtra(TYPE, currentType);
             intent.putExtra(POSITION, pos);
             startActivity(intent);
         });
         rvAnimals.setAdapter(adapter);
-        currentType = getArguments().getInt(TYPE, 0);
 
         Subscription subscription = service.getCats()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(animalModelWebResponse -> adapter.addAll(animalModelWebResponse.getData()), throwable -> Log.e("error", throwable.getMessage()));
+    }
 
-
-        return view;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        rvAnimals.getLayoutManager().onRestoreInstanceState(listState);
+        if (savedInstanceState != null)
+            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
     }
 
     @Override
@@ -80,16 +89,6 @@ public class CatsFragment extends Fragment {
         listState = rvAnimals.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(LIST_STATE_KEY, listState);
         super.onSaveInstanceState(outState);
-
-
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        rvAnimals.getLayoutManager().onRestoreInstanceState(listState);
-        if (savedInstanceState != null)
-            listState = savedInstanceState.getParcelable(LIST_STATE_KEY);
 
 
     }

@@ -1,43 +1,37 @@
 package test.levkovskiy.com.zimad.ui.details;
 
+import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import test.levkovskiy.com.zimad.R;
+import test.levkovskiy.com.zimad.databinding.ActivityDetailsBinding;
 import test.levkovskiy.com.zimad.net.model.AnimalModel;
-import test.levkovskiy.com.zimad.ui.BaseActivity;
 
 import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.OBJECT;
 import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.POSITION;
-import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.TYPE;
 
-public class DetailsActivity extends BaseActivity {
+public class DetailsActivity extends AppCompatActivity {
 
-    @BindView(R.id.image)
-    ImageView image;
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
-    @BindView(R.id.tv_subtitle)
-    TextView tvSubtitle;
-    int currentType = 0;
 
+    @BindingAdapter("imageUrl")
+    public static void loadImage(ImageView imageView, String v) {
+        Picasso.with(imageView.getContext()).load(v).into(imageView);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cat_details);
-        ButterKnife.bind(this);
+        ActivityDetailsBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_details);
         if (getIntent() != null) {
             AnimalModel.DataBean dataBean = getIntent().getParcelableExtra(OBJECT);
-            Picasso.with(this).load(dataBean.getUrl()).into(image);
-            tvTitle.setText(dataBean.getTitle());
-            tvSubtitle.setText(String.valueOf(getIntent().getIntExtra(POSITION, 0)));
-            currentType = getIntent().getIntExtra(TYPE, 0);
+            binding.setAnimal(dataBean);
+            binding.setPosition(String.valueOf(getIntent().getIntExtra(POSITION, 0)));
+
         }
     }
 

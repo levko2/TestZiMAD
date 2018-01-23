@@ -13,46 +13,81 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.sliding_tabs)
     TabLayout tabLayout;
-
+    CatsFragment catsFragment;
+    DogsFragment dogsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        catsFragment = CatsFragment.newInstance();
+        dogsFragment = DogsFragment.newInstance();
+        if (savedInstanceState == null) {
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tabLayout.getSelectedTabPosition() == 0) {
-                    // cats fragment
-                    CatsFragment catsFragment = CatsFragment.newInstance();
-                    replaceFragment(catsFragment, "catFragment");
-
-                } else if (tabLayout.getSelectedTabPosition() == 1) {
-                    // dogs fragment
-                    DogsFragment dogsFragment = DogsFragment.newInstance();
-                    replaceFragment(dogsFragment, "dogFragment");
-                }
+            tabLayout.addOnTabSelectedListener(listener);
+            tabLayout.addTab(tabLayout.newTab().setText("Cats"));
+            tabLayout.addTab(tabLayout.newTab().setText("Dogs"));
+        } else {
+            int selected = savedInstanceState.getInt("selectedTab", 0);
+            if (selected == 0) {
+                tabLayout.addTab(tabLayout.newTab().setText("Cats"), true);
+                tabLayout.addTab(tabLayout.newTab().setText("Dogs"));
+            } else if (selected == 1) {
+                tabLayout.addTab(tabLayout.newTab().setText("Cats"));
+                tabLayout.addTab(tabLayout.newTab().setText("Dogs"), true);
             }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+            tabLayout.addOnTabSelectedListener(listener);
+
+        }
+    }
+
+    TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+
+            if (tabLayout.getSelectedTabPosition() == 0) {
+                // cats fragment
+
+                replaceFragment(catsFragment, "catsFragment");
+
+
+            } else if (tabLayout.getSelectedTabPosition() == 1) {
+                // dogs fragment
+
+                replaceFragment(dogsFragment, "dogsFragment");
 
             }
+        }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+        }
 
-            }
-        });
-        tabLayout.addTab(tabLayout.newTab().setText("Send"), true);
-        tabLayout.addTab(tabLayout.newTab().setText("Send & Post"));
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+        }
+    };
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("selectedTab", tabLayout.getSelectedTabPosition());
     }
 
     private void replaceFragment(Fragment fragment, String tag) {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment, tag).commit();
+
+    }
+
+    private void attachFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().attach(fragment).commit();
+
+    }
+
+    private void detachFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().detach(fragment).commit();
 
     }
 }

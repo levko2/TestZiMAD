@@ -13,12 +13,6 @@ import test.levkovskiy.com.zimad.net.model.AnimalModel;
 
 public interface INetworkService {
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://kot3.com/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(new Gson()))
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            .build();
 
     @GET("xim/api.php?query=dog")
     Observable<AnimalModel> getDogs();

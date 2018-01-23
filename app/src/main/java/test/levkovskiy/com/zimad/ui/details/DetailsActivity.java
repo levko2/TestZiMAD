@@ -12,9 +12,8 @@ import test.levkovskiy.com.zimad.R;
 import test.levkovskiy.com.zimad.net.model.AnimalModel;
 import test.levkovskiy.com.zimad.ui.BaseActivity;
 
-import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.OBJECT;
-import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.POSITION;
-import static test.levkovskiy.com.zimad.ui.main_screen.CatsFragment.TYPE;
+import static test.levkovskiy.com.zimad.Constants.OBJECT;
+import static test.levkovskiy.com.zimad.Constants.POSITION;
 
 public class DetailsActivity extends BaseActivity {
 
@@ -24,7 +23,6 @@ public class DetailsActivity extends BaseActivity {
     TextView tvTitle;
     @BindView(R.id.tv_subtitle)
     TextView tvSubtitle;
-    int currentType = 0;
 
 
     @Override
@@ -37,7 +35,7 @@ public class DetailsActivity extends BaseActivity {
             Picasso.with(this).load(dataBean.getUrl()).into(image);
             tvTitle.setText(dataBean.getTitle());
             tvSubtitle.setText(String.valueOf(getIntent().getIntExtra(POSITION, 0)));
-            currentType = getIntent().getIntExtra(TYPE, 0);
+
         }
     }
 

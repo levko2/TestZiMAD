@@ -1,6 +1,7 @@
 package test.levkovskiy.com.zimad.ui.main_screen;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,6 +32,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.AnimalViewHolder> {
 
     AnimalModel.DataBean getItem(int pos) {
         return animals.get(pos);
+    }
+
+    public List<AnimalModel.DataBean> getItems() {
+        return animals;
     }
 
     public interface OnItemClickListener {
